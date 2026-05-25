@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mestre do Estoque 360 — Blindar Lucros, Eliminar Perdas</title>
+  <meta name="description" content="O sistema profissional para blindar lucros, eliminar perdas invisíveis e transformar estoque em dinheiro." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#09090b;
+      --surface:#18181b;
+      --border:rgba(255,255,255,0.06);
+      --border-hover:rgba(255,255,255,0.12);
+      --text:#fafafa;
+      --text-muted:rgba(255,255,255,0.5);
+      --text-dim:rgba(255,255,255,0.25);
+      --accent:#00c853;
+      --accent-dim:rgba(0,200,83,0.1);
+      --accent-glow:rgba(0,200,83,0.25);
+      --blue:#2979ff;
+      --gold:#d4a853;
+      --radius:16px;
+      --radius-sm:10px;
+      --transition:0.35s cubic-bezier(0.22,1,0.36,1)
+    }
+    html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+    body{
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      overflow-x:hidden
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+    .section{padding:96px 0;position:relative}
+    .tag{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--accent);
+      background:var(--accent-dim);
+      border:1px solid rgba(0,200,83,0.12);
+      padding:5px 14px;border-radius:100px;margin-bottom:20px
+    }
+    .section-title{
+      font-size:clamp(1.8rem,3.5vw,2.8rem);
+      font-weight:800;line-height:1.12;letter-spacing:-.025em;
+      margin-bottom:16px
+    }
+    .section-title .gradient{
+      background:linear-gradient(135deg,var(--accent) 0%,var(--blue) 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+    }
+    .section-sub{
+      font-size:clamp(.95rem,1.2vw,1.05rem);
+      color:var(--text-muted);
+      max-width:600px;line-height:1.7
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:14px 32px;border-radius:60px;font-weight:700;font-size:.95rem;
+      text-decoration:none;cursor:pointer;border:none;
+      transition:all var(--transition);position:relative;overflow:hidden
+    }
+    .btn-primary{
+      background:var(--accent);color:#000;
+      box-shadow:0 6px 28px var(--accent-glow)
+    }
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 40px var(--accent-glow)}
+    .btn-secondary{
+      background:transparent;color:var(--text);
+      border:1px solid var(--border)
+    }
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .glass{
+      background:rgba(255,255,255,0.02);
+      backdrop-filter:blur(12px);
+      border:1px solid var(--border);
+      border-radius:var(--radius)
+    }
+    .card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:28px;
+      transition:all var(--transition)
+    }
+    .card:hover{border-color:var(--border-hover);transform:translateY(-3px)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    @media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+    /* ── reveal ── */
+    .r{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.22,1,.36,1)}
+    .r.v{opacity:1;transform:translateY(0)}
+    .r1{transition-delay:.1s}.r2{transition-delay:.2s}.r3{transition-delay:.3s}.r4{transition-delay:.4s}.r5{transition-delay:.5s}
+
+    /* ── ORB ── */
+    .orb{
+      position:absolute;border-radius:50%;pointer-events:none;
+      filter:blur(120px);opacity:.15
+    }
+
+    /* ── NAV ── */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:14px 0;transition:all var(--transition)
+    }
+    nav.scrolled{
+      background:rgba(9,9,11,.88);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border)
+    }
+    nav .container{display:flex;align-items:center;justify-content:space-between}
+    .logo{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+    .logo em{font-style:normal;color:var(--accent)}
+    .nav-cta{padding:9px 22px;font-size:.8rem}
+
+    /* ── HERO ── */
+    .hero{
+      min-height:100vh;display:flex;align-items:center;
+      position:relative;overflow:hidden;padding-top:80px
+    }
+    .hero-bg{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse 600px 400px at 10% 60%, rgba(0,200,83,.06), transparent),
+        radial-gradient(ellipse 500px 500px at 90% 30%, rgba(41,121,255,.04), transparent),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
+    }
+    .hero .container{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.15);
+      padding:7px 16px;border-radius:100px;font-size:.75rem;font-weight:600;
+      color:var(--accent);margin-bottom:24px
+    }
+    .hero h1{
+      font-size:clamp(2.2rem,4.8vw,3.8rem);
+      font-weight:900;line-height:1.05;letter-spacing:-.03em;
+      margin-bottom:20px
+    }
+    .hero h1 .gl{background:linear-gradient(135deg,var(--accent) 0%,var(--blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{
+      font-size:clamp(1rem,1.3vw,1.1rem);
+      color:var(--text-muted);line-height:1.7;margin-bottom:32px;
+      max-width:520px
+    }
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .hero-metrics{display:flex;gap:40px;margin-top:48px;padding-top:28px;border-top:1px solid var(--border)}
+    .hero-metric h3{font-size:1.6rem;font-weight:800;color:var(--accent)}
+    .hero-metric p{font-size:.75rem;color:var(--text-dim);margin:0}
+    .hero-visual{position:relative}
+    .mockup-stack{
+      position:relative;width:100%;aspect-ratio:4/3;
+      perspective:1000px
+    }
+    .mockup-card{
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(0,200,83,.06),rgba(41,121,255,.06));
+      border:1px solid var(--border);border-radius:var(--radius);
+      backdrop-filter:blur(8px);
+      display:flex;align-items:center;justify-content:center;flex-direction:column;
+      overflow:hidden
+    }
+    .mockup-card:nth-child(1){transform:rotateY(-4deg) rotateX(2deg) translateZ(0);z-index:3}
+    .mockup-card:nth-child(2){transform:rotateY(-8deg) rotateX(4deg) translateZ(-20px);z-index:2;opacity:.6}
+    .mockup-card:nth-child(3){transform:rotateY(-12deg) rotateX(6deg) translateZ(-40px);z-index:1;opacity:.3}
+    .mockup-inner{text-align:center;padding:32px}
+    .mockup-icon{font-size:3rem;margin-bottom:16px;opacity:.3}
+    .mockup-title{font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--text)}
+    .mockup-sub{font-size:.8rem;color:var(--text-dim)}
+    .mockup-line{
+      position:absolute;bottom:0;left:0;right:0;height:4px;
+      background:linear-gradient(90deg,var(--accent),var(--blue));
+      border-radius:0 0 var(--radius) var(--radius)
+    }
+    @media(max-width:900px){
+      .hero .container{grid-template-columns:1fr;gap:40px}
+      .hero-visual{max-width:400px;margin:0 auto}
+      .hero-metrics{gap:24px;flex-wrap:wrap}
+      .hero{min-height:auto;padding:110px 0 60px;text-align:center}
+      .hero-actions{justify-content:center}
+      .hero p{margin:0 auto 32px}
+      .hero-metrics{justify-content:center}
+    }
+
+    /* ── DOR ── */
+    #dor{position:relative}
+    .dor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:40px}
+    .dor-chip{
+      display:flex;align-items:center;gap:10px;
+      background:rgba(255,68,68,.03);border:1px solid rgba(255,68,68,.08);
+      border-radius:var(--radius-sm);padding:14px 18px;
+      font-size:.85rem;color:var(--text-muted);transition:all var(--transition)
+    }
+    .dor-chip:hover{background:rgba(255,68,68,.06);border-color:rgba(255,68,68,.15)}
+    .dor-chip .ico{flex-shrink:0;opacity:.4;font-size:1rem}
+
+    /* ── PILARES ── */
+    .p-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:40px}
+    .p-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:26px 22px;text-align:center;
+      transition:all var(--transition);position:relative;overflow:hidden
+    }
+    .p-card:hover{border-color:rgba(0,200,83,.2);transform:translateY(-5px)}
+    .p-card .num{
+      width:40px;height:40px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),var(--blue));
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:1rem;margin:0 auto 14px;color:#000
+    }
+    .p-card h4{font-size:.95rem;font-weight:700;margin-bottom:6px}
+    .p-card p{font-size:.8rem;color:var(--text-muted);line-height:1.6}
+
+    /* ── CONTEUDO ── */
+    .c-list{display:grid;gap:8px;margin-top:40px}
+    .c-item{
+      display:flex;align-items:center;gap:14px;
+      padding:14px 20px;border-radius:var(--radius-sm);
+      background:var(--surface);border:1px solid var(--border);
+      font-size:.88rem;transition:all var(--transition)
+    }
+    .c-item:hover{border-color:rgba(0,200,83,.12)}
+    .c-item .ck{color:var(--accent);font-weight:700;flex-shrink:0}
+
+    /* ── TRANSFORM ── */
+    .t-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+    .t-card{padding:32px;border-radius:var(--radius)}
+    .t-card.antes{background:rgba(255,68,68,.03);border:1px solid rgba(255,68,68,.1)}
+    .t-card.depois{background:rgba(0,200,83,.03);border:1px solid rgba(0,200,83,.1)}
+    .t-card h4{font-size:1.05rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .t-card li{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:.85rem;color:var(--text-muted);list-style:none}
+    @media(max-width:768px){.t-grid{grid-template-columns:1fr}}
+
+    /* ── TESTIMONIALS ── */
+    .test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;margin-top:40px}
+    .test-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+    .test-card .stars{color:var(--gold);font-size:.85rem;margin-bottom:10px}
+    .test-card blockquote{font-size:.88rem;color:var(--text-muted);line-height:1.7;margin-bottom:14px;font-style:italic}
+    .test-card .author{display:flex;align-items:center;gap:10px}
+    .test-card .av{
+      width:36px;height:36px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--blue));
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:.8rem;flex-shrink:0
+    }
+    .test-card .nm{font-weight:600;font-size:.85rem}
+    .test-card .rl{font-size:.75rem;color:var(--text-dim)}
+
+    /* ── OFFER ── */
+    #oferta{text-align:center}
+    .offer-card{
+      max-width:600px;margin:40px auto 0;
+      background:linear-gradient(135deg,rgba(0,200,83,.04),rgba(41,121,255,.04));
+      border:1px solid rgba(0,200,83,.12);border-radius:var(--radius);
+      padding:44px 36px;position:relative;overflow:hidden
+    }
+    .offer-card::before{
+      content:'';position:absolute;top:-60%;left:-60%;width:220%;height:220%;
+      background:conic-gradient(from 0deg at 50% 50%,transparent 0%,rgba(0,200,83,.04) 25%,transparent 50%);
+      animation:spin 10s linear infinite
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .offer-card>*{position:relative;z-index:2}
+    .offer-price{font-size:3.2rem;font-weight:900;line-height:1;margin:12px 0 6px}
+    .offer-price small{font-size:1rem;font-weight:400;color:var(--text-dim)}
+    .offer-install{font-size:.85rem;color:var(--text-dim);margin-bottom:20px}
+    .offer-bonus{text-align:left;display:inline-block;margin:20px 0}
+    .offer-bonus li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.85rem;color:var(--text-muted);list-style:none}
+    .offer-bonus li::before{content:'✓';color:var(--accent);font-weight:700}
+    .offer-guarantee{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      margin-top:20px;padding:14px;border-radius:var(--radius-sm);
+      background:rgba(255,255,255,.02);font-size:.82rem;color:var(--text-dim)
+    }
+    .offer-guarantee strong{color:var(--text)}
+    .offer-urgency{margin-top:12px;font-size:.82rem;color:var(--gold);font-weight:600}
+
+    /* ── FAQ ── */
+    .faq-list{max-width:680px;margin:40px auto 0;display:flex;flex-direction:column;gap:8px}
+    .faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+    .faq-q{
+      width:100%;padding:18px 22px;background:none;border:none;
+      font:inherit;font-weight:600;font-size:.9rem;color:var(--text);
+      text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+      transition:color var(--transition)
+    }
+    .faq-q:hover{color:var(--accent)}
+    .faq-q .ar{transition:transform .3s;font-size:.7rem;opacity:.3}
+    .faq-item.open .faq-q .ar{transform:rotate(180deg)}
+    .faq-a{padding:0 22px;max-height:0;overflow:hidden;transition:all .4s}
+    .faq-item.open .faq-a{padding:0 22px 18px;max-height:300px}
+    .faq-a p{font-size:.85rem;color:var(--text-muted);line-height:1.7}
+
+    /* ── FOOTER ── */
+    footer{padding:44px 0;border-top:1px solid var(--border);text-align:center;font-size:.78rem;color:var(--text-dim)}
+
+    /* ── MISC ── */
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:10px}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.15)}
+
+    @media(max-width:480px){
+      .container{padding:0 14px}
+      .section{padding:60px 0}
+      .offer-card{padding:32px 20px}
+      .btn{width:100%;justify-content:center}
+      .hero-actions{flex-direction:column}
+      .hero h1{font-size:1.9rem}
+      .nav-cta{display:none}
+      .p-grid{grid-template-columns:1fr 1fr}
+      .hero-metrics{flex-direction:column;gap:12px}
+      .hero-metric{display:flex;align-items:center;gap:10px}
+      .hero-metric h3{font-size:1.3rem}
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <div class="container">
+      <div class="logo">Mestre do <em>Estoque 360</em></div>
+      <a href="checkout.html" class="btn btn-primary nav-cta">Quero Dominar Meu Estoque</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge r v">📦 Sistema 360 de Blindagem</div>
+        <h1 class="r v r1">Pare de Perder Dinheiro no <span class="gl">Estoque Sem Perceber</span></h1>
+        <p class="r v r2">Descubra o sistema profissional para blindar a entrada de mercadorias, organizar sua operação, reduzir perdas invisíveis e transformar estoque parado em dinheiro.</p>
+        <div class="hero-actions r v r3">
+          <a href="checkout.html" class="btn btn-primary">
+            Quero Dominar Meu Estoque
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#conteudo" class="btn btn-secondary">Ver Conteúdo</a>
+        </div>
+        <div class="hero-metrics r v r4">
+          <div class="hero-metric"><h3>15</h3><p>Capítulos</p></div>
+          <div class="hero-metric"><h3>5</h3><p>Pilares</p></div>
+          <div class="hero-metric"><h3>98%+</h3><p>Acuracidade</p></div>
+        </div>
+      </div>
+      <div class="hero-visual r v r3">
+        <div class="mockup-stack">
+          <div class="mockup-card" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--surface)">
+            <img src="capaebook.jpeg" alt="Mestre do Estoque 360" style="max-width:85%;max-height:90%;width:auto;height:auto;object-fit:contain;display:block;border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.4)" />
+          </div>
+          <div class="mockup-card" style="background:var(--surface)"></div>
+          <div class="mockup-card" style="background:var(--surface)"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dor">
+    <div class="orb" style="bottom:-20%;left:-10%;width:500px;height:500px;background:var(--accent)"></div>
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">O Problema</span>
+        <h2 class="section-title">Seu Estoque Pode Estar <span class="gradient">Sangrando Dinheiro</span></h2>
+        <p class="section-sub" style="margin:0 auto">O problema não é apenas vender mais. Muitas empresas vendem, compram e movimentam produtos todos os dias, mas continuam perdendo dinheiro porque o estoque está cheio de furos invisíveis.</p>
+      </div>
+      <div class="dor-grid r r1">
+        <div class="dor-chip"><span class="ico">📦</span>Caixas assinadas sem conferência</div>
+        <div class="dor-chip"><span class="ico">📉</span>Produto separado sem baixa no sistema</div>
+        <div class="dor-chip"><span class="ico">📍</span>Prateleira sem endereço definido</div>
+        <div class="dor-chip"><span class="ico">⏳</span>Item parado há meses sem giro</div>
+        <div class="dor-chip"><span class="ico">⚠️</span>Divergência ignorada entre sistema e físico</div>
+        <div class="dor-chip"><span class="ico">🔄</span>Venda duplicada de produto reservado</div>
+        <div class="dor-chip"><span class="ico">👥</span>Dependência da memória do estoquista</div>
+        <div class="dor-chip"><span class="ico">💰</span>Capital parado em produtos sem saída</div>
+        <div class="dor-chip"><span class="ico">📋</span>Compra por intuição sem Curva ABC</div>
+        <div class="dor-chip"><span class="ico">🔍</span>Inventário anual ineficiente</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="solucao">
+    <div class="container">
+      <div class="grid-2" style="align-items:center">
+        <div class="r">
+          <span class="tag">A Solução</span>
+          <h2 class="section-title">Apresentamos o <span class="gradient">Mestre do Estoque 360</span></h2>
+          <p class="section-sub" style="font-size:.95rem;color:var(--text-muted);line-height:1.8">
+            Um guia prático e direto para empresários e gestores que querem parar de perder dinheiro com divergências, produtos parados, recebimentos mal feitos e falta de controle operacional. Você vai aprender a proteger a entrada, organizar o espaço, controlar a separação, usar a Curva ABC para decidir melhor, auditar diariamente e recuperar capital parado.
+          </p>
+        </div>
+        <div class="r r1" style="display:flex;gap:12px;flex-wrap:wrap">
+          <div class="glass" style="flex:1;min-width:120px;padding:20px;text-align:center">
+            <div style="font-size:1.8rem;font-weight:900;color:var(--accent)">5</div>
+            <div style="font-size:.75rem;color:var(--text-dim)">Pilares do Sistema</div>
+          </div>
+          <div class="glass" style="flex:1;min-width:120px;padding:20px;text-align:center">
+            <div style="font-size:1.8rem;font-weight:900;color:var(--blue)">15</div>
+            <div style="font-size:.75rem;color:var(--text-dim)">Capítulos</div>
+          </div>
+          <div class="glass" style="flex:1;min-width:120px;padding:20px;text-align:center">
+            <div style="font-size:1.8rem;font-weight:900;color:var(--gold)">98%+</div>
+            <div style="font-size:.75rem;color:var(--text-dim)">Acuracidade</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pilares">
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">Os 5 Pilares</span>
+        <h2 class="section-title">O Sistema 360 de <span class="gradient">Blindagem de Estoque</span></h2>
+        <p class="section-sub" style="margin:0 auto">Cinco pilares que estruturam todo o método para eliminar perdas e transformar seu estoque em uma operação lucrativa.</p>
+      </div>
+      <div class="p-grid">
+        <div class="p-card r r1"><div class="num">1</div><h4>Recebimento Técnico</h4><p>Blindar a entrada para impedir que mercadorias com falta, avaria ou divergência contaminem o estoque.</p></div>
+        <div class="p-card r r2"><div class="num">2</div><h4>GPS Logístico</h4><p>Criar um sistema de localização para reduzir tempo perdido e aumentar a velocidade da operação.</p></div>
+        <div class="p-card r r3"><div class="num">3</div><h4>Separação Blindada</h4><p>Controlar o acesso ao estoque e impedir erros de baixa, venda duplicada e perda de acuracidade.</p></div>
+        <div class="p-card r r4"><div class="num">4</div><h4>Curva ABC Aplicada</h4><p>Direcionar capital para produtos que realmente giram e evitar dinheiro parado em itens lentos.</p></div>
+        <div class="p-card r r5"><div class="num">5</div><h4>Inventário Cíclico</h4><p>Corrigir pequenas divergências todos os dias antes que virem prejuízos impossíveis de rastrear.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="conteudo">
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">Conteúdo</span>
+        <h2 class="section-title">Dentro do <span class="gradient">Ebook</span></h2>
+        <p class="section-sub" style="margin:0 auto">15 capítulos que transformam a gestão do seu estoque do zero ao avançado.</p>
+      </div>
+      <div class="c-list">
+        <div class="c-item r"><span class="ck">✓</span> Introdução — O Estoque Não Quebra de Uma Vez</div>
+        <div class="c-item r r1"><span class="ck">✓</span> Recebimento Técnico e Auditoria de Entrada</div>
+        <div class="c-item r r1"><span class="ck">✓</span> Conferência Cega — o método que impede o vício de confirmação</div>
+        <div class="c-item r r2"><span class="ck">✓</span> GPS Logístico e Arquitetura Física</div>
+        <div class="c-item r r2"><span class="ck">✓</span> Estratégia de Altura por Giro</div>
+        <div class="c-item r r3"><span class="ck">✓</span> Separação Blindada e Operação Controlada</div>
+        <div class="c-item r r3"><span class="ck">✓</span> Área de Pedidos Pendentes</div>
+        <div class="c-item r r4"><span class="ck">✓</span> Inteligência Financeira — Curva ABC Aplicada</div>
+        <div class="c-item r r4"><span class="ck">✓</span> Vaidade de Portfólio — margem sem giro é ilusão</div>
+        <div class="c-item r r4"><span class="ck">✓</span> Auditoria Diária e Inventário Cíclico</div>
+        <div class="c-item r"><span class="ck">✓</span> Acuracidade Acima de 98%</div>
+        <div class="c-item r r1"><span class="ck">✓</span> Bônus: Operação Estoque Vivo</div>
+        <div class="c-item r r1"><span class="ck">✓</span> Mercado Digital — encalhe local em oportunidade nacional</div>
+        <div class="c-item r r2"><span class="ck">✓</span> Combos de Desova Dinâmica</div>
+        <div class="c-item r r2"><span class="ck">✓</span> Comissão Reversa</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="transformacao">
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">Antes & Depois</span>
+        <h2 class="section-title">A <span class="gradient">Transformação</span> na Sua Operação</h2>
+      </div>
+      <div class="t-grid">
+        <div class="t-card antes r">
+          <h4><span style="color:#ff4444">✕</span> Antes do Método</h4>
+          <ul>
+            <li><span style="color:#ff4444;flex-shrink:0">✕</span> Estoque confuso e vulnerável</li>
+            <li><span style="color:#ff4444;flex-shrink:0">✕</span> Perdas invisíveis acumuladas</li>
+            <li><span style="color:#ff4444;flex-shrink:0">✕</span> Divergência constante sistema x físico</li>
+            <li><span style="color:#ff4444;flex-shrink:0">✕</span> Capital parado em produtos sem giro</li>
+            <li><span style="color:#ff4444;flex-shrink:0">✕</span> Dependência da memória de funcionários</li>
+            <li><span style="color:#ff4444;flex-shrink:0">✕</span> Compras por intuição</li>
+          </ul>
+        </div>
+        <div class="t-card depois r r1">
+          <h4><span style="color:var(--accent)">✓</span> Depois do Método</h4>
+          <ul>
+            <li><span style="color:var(--accent);flex-shrink:0">✓</span> Operação estratégica e controlada</li>
+            <li><span style="color:var(--accent);flex-shrink:0">✓</span> Entrada blindada com conferência cega</li>
+            <li><span style="color:var(--accent);flex-shrink:0">✓</span> Acuracidade acima de 98%</li>
+            <li><span style="color:var(--accent);flex-shrink:0">✓</span> Capital liberado com produtos em giro</li>
+            <li><span style="color:var(--accent);flex-shrink:0">✓</span> Localização inteligente sem dependência</li>
+            <li><span style="color:var(--accent);flex-shrink:0">✓</span> Compras baseadas em dados reais</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="depoimentos">
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">Prova Social</span>
+        <h2 class="section-title">O Que Gestores Estão <span class="gradient">Dizendo</span></h2>
+      </div>
+      <div class="test-grid">
+        <div class="test-card r r1">
+          <div class="stars">★★★★★</div>
+          <blockquote>"O método de conferência cega salvou nossa operação. Reduzimos divergências em 80% no primeiro mês."</blockquote>
+          <div class="author"><div class="av">CR</div><div><div class="nm">Carlos Ribeiro</div><div class="rl">CEO — Distribuidora Nova Era</div></div></div>
+        </div>
+        <div class="test-card r r2">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Não fazia ideia de quanto perdia com produtos parados. A operação estoque vivo recuperou R$ 47 mil em 3 meses."</blockquote>
+          <div class="author"><div class="av">AM</div><div><div class="nm">Ana Mendes</div><div class="rl">Diretora — Autopeças Mendes</div></div></div>
+        </div>
+        <div class="test-card r r3">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Antes eu comprava no achismo. Hoje uso a Curva ABC e meu capital de giro melhorou 35%. Leitura obrigatória."</blockquote>
+          <div class="author"><div class="av">RF</div><div><div class="nm">Rafael Farias</div><div class="rl">Gestor — Conecta Logística</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="beneficios">
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">Benefícios</span>
+        <h2 class="section-title">O Que Você <span class="gradient">Ganha</span></h2>
+      </div>
+      <div class="grid-3" style="margin-top:40px">
+        <div class="card r"><h4 style="margin-bottom:6px;font-size:.95rem">💰 Reduzir Perdas</h4><p style="color:var(--text-muted);font-size:.85rem">Elimine prejuízos invisíveis no recebimento, armazenagem e separação.</p></div>
+        <div class="card r r1"><h4 style="margin-bottom:6px;font-size:.95rem">📊 Acuracidade Real</h4><p style="color:var(--text-muted);font-size:.85rem">Sistema refletindo a realidade física com mais de 98% de precisão.</p></div>
+        <div class="card r r2"><h4 style="margin-bottom:6px;font-size:.95rem">🚀 Liberar Capital</h4><p style="color:var(--text-muted);font-size:.85rem">Transforme produtos parados em dinheiro com desova inteligente.</p></div>
+        <div class="card r"><h4 style="margin-bottom:6px;font-size:.95rem">🧭 Localização Inteligente</h4><p style="color:var(--text-muted);font-size:.85rem">Organize com endereçamento claro e acelere a separação.</p></div>
+        <div class="card r r1"><h4 style="margin-bottom:6px;font-size:.95rem">🛡️ Separação Blindada</h4><p style="color:var(--text-muted);font-size:.85rem">Evite vendas duplicadas e estornos com processos controlados.</p></div>
+        <div class="card r r2"><h4 style="margin-bottom:6px;font-size:.95rem">📈 Compras Inteligentes</h4><p style="color:var(--text-muted);font-size:.85rem">Baseie compras em giro real, não em intuição.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="oferta">
+    <div class="container">
+      <div class="r">
+        <span class="tag">Oferta</span>
+        <h2 class="section-title">Garanta Seu <span class="gradient">Mestre do Estoque 360</span></h2>
+      </div>
+      <div class="offer-card r r1">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent);letter-spacing:.1em;text-transform:uppercase">Oferta Especial de Lançamento</div>
+        <div class="offer-price">R$ 97 <small>/ à vista</small></div>
+        <div class="offer-install">ou 12x de R$ 9,70</div>
+        <ul class="offer-bonus">
+          <li>Ebook Mestre do Estoque 360 — PDF Premium</li>
+          <li>Bônus: Operação Estoque Vivo</li>
+          <li>Bônus: Checklist de Recebimento Técnico</li>
+          <li>Bônus: Planilha de Curva ABC Automática</li>
+          <li>Acesso digital imediato</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="font-size:1rem;padding:16px 44px">
+          Quero Dominar Meu Estoque
+        </a>
+        <div class="offer-guarantee">
+          <span style="font-size:1.3rem">🛡️</span>
+          <span><strong>Garantia de 7 dias</strong> — Risco zero. Se não gostar, devolvemos seu dinheiro.</span>
+        </div>
+        <div class="offer-urgency">⚡ Oferta por tempo limitado — Preço promocional de lançamento</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="r" style="text-align:center">
+        <span class="tag">FAQ</span>
+        <h2 class="section-title">Dúvidas <span class="gradient">Frequentes</span></h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item r"><button class="faq-q">Esse ebook serve para pequenos negócios?<span class="ar">▼</span></button><div class="faq-a"><p>Sim. Ele foi criado especialmente para operações reais, de pequenas e médias empresas, que precisam melhorar controle sem depender de sistemas complexos.</p></div></div>
+        <div class="faq-item r r1"><button class="faq-q">Preciso ter um grande estoque para aplicar?<span class="ar">▼</span></button><div class="faq-a"><p>Não. Os princípios funcionam para estoques pequenos, médios ou grandes. Quanto antes aplicar, menos prejuízo acumulado.</p></div></div>
+        <div class="faq-item r r2"><button class="faq-q">É técnico demais?<span class="ar">▼</span></button><div class="faq-a"><p>Não. A linguagem é direta, prática e voltada para aplicação no dia a dia. Qualquer gestor consegue implementar.</p></div></div>
+        <div class="faq-item r r3"><button class="faq-q">Serve para loja, distribuidora e indústria?<span class="ar">▼</span></button><div class="faq-a"><p>Sim. O método se aplica a qualquer negócio que recebe, armazena, separa e vende produtos físicos.</p></div></div>
+        <div class="faq-item r r4"><button class="faq-q">Vou receber o material como?<span class="ar">▼</span></button><div class="faq-a"><p>O ebook é digital, em PDF, com acesso imediato após a compra. Você recebe o link de download por e-mail.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cta-final" style="padding-bottom:80px">
+    <div class="container" style="text-align:center">
+      <div class="r">
+        <span class="tag">Última Chamada</span>
+        <h2 class="section-title">Comece Hoje a <span class="gradient">Transformar Seu Estoque</span></h2>
+        <p class="section-sub" style="margin:0 auto 32px">Pare de perder dinheiro com furos invisíveis. Aplique o sistema 360 de blindagem e transforme seu estoque em uma operação mais lucrativa, controlada e previsível.</p>
+        <a href="checkout.html" class="btn btn-primary" style="font-size:1rem;padding:18px 48px">
+          Quero Dominar Meu Estoque
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 Mestre do Estoque 360 — Todos os direitos reservados.</p>
+      <p style="margin-top:6px">Produto digital. Preços e condições sujeitos a alteração sem aviso prévio.</p>
+    </div>
+  </footer>
+
+  <script>
+    const nav=document.getElementById('nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+    const obs=new IntersectionObserver(e=>e.forEach(e=>e.isIntersecting&&e.target.classList.add('v')),{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.r').forEach(e=>obs.observe(e));
+    document.querySelectorAll('.faq-q').forEach(b=>b.addEventListener('click',()=>{
+      const i=b.parentElement,o=i.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(e=>e.classList.remove('open'));
+      if(!o)i.classList.add('open');
+    }));
+    document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+      const t=document.querySelector(a.getAttribute('href'));
+      t&&(e.preventDefault(),t.scrollIntoView({behavior:'smooth',block:'start'}));
+    }));
+  </script>
+</body>
+</html>
