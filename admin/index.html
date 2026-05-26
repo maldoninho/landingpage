@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Mestre do Estoque 360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#09090b;--surface:#18181b;--border:rgba(255,255,255,0.06);--text:#fafafa;
+      --text-muted:rgba(255,255,255,0.5);--text-dim:rgba(255,255,255,0.25);
+      --accent:#00c853;--accent-dim:rgba(0,200,83,0.1);
+      --overlay:rgba(255,255,255,0.02);--overlay-solid:rgba(255,255,255,0.03);
+      --radius:14px;--radius-sm:8px
+    }
+    body[data-theme="1"]{--accent:#00c853;--accent-dim:rgba(0,200,83,0.1)}
+    body[data-theme="2"]{--accent:#2979ff;--accent-dim:rgba(41,121,255,0.1)}
+    body[data-theme="3"]{--accent:#ff6d00;--accent-dim:rgba(255,109,0,0.1)}
+    body[data-theme="4"]{--accent:#7c3aed;--accent-dim:rgba(124,58,237,0.1)}
+    body[data-theme="5"]{--accent:#ec4899;--accent-dim:rgba(236,72,153,0.1)}
+    body[data-theme="6"]{--accent:#f59e0b;--accent-dim:rgba(245,158,11,0.1)}
+    body[data-theme="7"]{--accent:#06b6d4;--accent-dim:rgba(6,182,212,0.1)}
+    body[data-theme="8"]{--bg:#ffffff;--surface:#f8f9fa;--border:rgba(0,0,0,0.1);--text:#111827;--text-muted:rgba(0,0,0,0.65);--text-dim:rgba(0,0,0,0.45);--accent:#2563eb;--accent-dim:rgba(37,99,235,0.08);--overlay:rgba(0,0,0,0.04);--overlay-solid:rgba(0,0,0,0.06)}
+    body[data-theme="9"]{--bg:#fffbeb;--surface:#fef3c7;--border:rgba(0,0,0,0.1);--text:#1c1917;--text-muted:rgba(0,0,0,0.65);--text-dim:rgba(0,0,0,0.45);--accent:#ea580c;--accent-dim:rgba(234,88,12,0.08);--overlay:rgba(0,0,0,0.04);--overlay-solid:rgba(0,0,0,0.06)}
+    body[data-theme="10"]{--bg:#f0fdf4;--surface:#dcfce7;--border:rgba(0,0,0,0.1);--text:#14532d;--text-muted:rgba(0,0,0,0.65);--text-dim:rgba(0,0,0,0.45);--accent:#16a34a;--accent-dim:rgba(22,163,74,0.08);--overlay:rgba(0,0,0,0.04);--overlay-solid:rgba(0,0,0,0.06)}
+    body[data-theme="11"]{--accent:#ef4444;--accent-dim:rgba(239,68,68,0.1)}
+    body[data-theme="12"]{--accent:#14b8a6;--accent-dim:rgba(20,184,166,0.1)}
+    body[data-theme="13"]{--accent:#38bdf8;--accent-dim:rgba(56,189,248,0.1)}
+    body[data-theme="14"]{--accent:#4ade80;--accent-dim:rgba(74,222,128,0.1)}
+    html{-webkit-font-smoothing:antialiased}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .hidden{display:none!important}
+
+    /* LOGIN */
+    .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px;width:100%;max-width:380px;text-align:center}
+    .login-card h1{font-size:1.4rem;font-weight:700;margin-bottom:8px}
+    .login-card p{font-size:.85rem;color:var(--text-muted);margin-bottom:28px}
+    .login-card input{width:100%;padding:12px 14px;border-radius:var(--radius-sm);background:var(--overlay-solid);border:1px solid var(--border);color:var(--text);font-size:.9rem;margin-bottom:14px;font-family:inherit;outline:none}
+    .login-card input:focus{border-color:var(--accent)}
+    .login-card .btn{width:100%;padding:12px;border-radius:60px;font-weight:700;font-size:.9rem;cursor:pointer;border:none;background:var(--accent);color:#000;font-family:inherit;transition:.2s}
+    .login-card .btn:hover{opacity:.85}
+    .login-card .error{color:#ff4444;font-size:.8rem;margin-bottom:12px}
+
+    /* PAINEL */
+    .panel{display:flex;min-height:100vh}
+    .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:6px;position:fixed;top:0;left:0;bottom:0;z-index:10}
+    .sidebar .logo{font-size:1rem;font-weight:800;margin-bottom:20px}
+    .sidebar .logo em{font-style:normal;color:var(--accent)}
+    .sidebar a{display:block;padding:10px 14px;border-radius:var(--radius-sm);font-size:.85rem;color:var(--text-muted);text-decoration:none;cursor:pointer;transition:.15s}
+    .sidebar a:hover,.sidebar a.active{background:var(--overlay);color:var(--text)}
+    .sidebar .logout{margin-top:auto;color:#ff4444!important}
+    .main{margin-left:240px;flex:1;padding:40px;max-width:900px}
+    .main h2{font-size:1.5rem;font-weight:700;margin-bottom:6px}
+    .main .desc{font-size:.85rem;color:var(--text-muted);margin-bottom:28px}
+    .section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px}
+    .section-card h3{font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:4px}
+    .form-group input,.form-group textarea{width:100%;padding:10px 12px;border-radius:var(--radius-sm);background:var(--overlay-solid);border:1px solid var(--border);color:var(--text);font-size:.85rem;font-family:inherit;outline:none;resize:vertical}
+    .form-group textarea{min-height:70px}
+    .form-group input:focus,.form-group textarea:focus{border-color:var(--accent)}
+    .btn-save{background:var(--accent);color:#000;border:none;padding:10px 24px;border-radius:60px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:.2s}
+    .btn-save:hover{opacity:.85}
+    .sub-card{background:var(--overlay);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;margin-bottom:12px}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#000;padding:12px 24px;border-radius:60px;font-weight:700;font-size:.85rem;opacity:0;transform:translateY(10px);transition:all .3s;z-index:100;pointer-events:none}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.error{background:#ff4444;color:#fff}
+
+    @media(max-width:700px){
+      .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap;gap:4px;padding:12px}
+      .sidebar .logo{margin-bottom:0;width:100%}
+      .sidebar .logout{margin-top:0}.main{margin-left:0}
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast"></div>
+  <script>(function(){var t=localStorage.getItem('mestre360_theme');if(t)document.body.dataset.theme=t;})();</script>
+
+  <!-- LOGIN PAGE -->
+  <div class="login-page" id="loginPage">
+    <div class="login-card">
+      <h1>🔐 Admin</h1>
+      <p>Mestre do Estoque 360</p>
+      <div class="error" id="loginError"></div>
+      <input type="text" id="loginUser" placeholder="Usuário" autocomplete="off" />
+      <input type="password" id="loginPass" placeholder="Senha" />
+      <button class="btn" onclick="doLogin()">Entrar</button>
+      <p style="margin-top:16px;font-size:.72rem;color:var(--text-muted);opacity:.5">Usuário: admin<br/>Senha: estoque360</p>
+    </div>
+  </div>
+
+  <!-- PAINEL -->
+  <div class="hidden" id="dashboard">
+    <div class="panel">
+      <nav class="sidebar">
+        <div class="logo">Mestre do <em>Estoque 360</em></div>
+        <a class="active" onclick="showSection('hero')" data-section="hero">🏠 Hero</a>
+        <a onclick="showSection('dor')" data-section="dor">⚠️ Dor</a>
+        <a onclick="showSection('solucao')" data-section="solucao">💡 Solução</a>
+        <a onclick="showSection('pilares')" data-section="pilares">🏗️ Pilares</a>
+        <a onclick="showSection('conteudo')" data-section="conteudo">📖 Conteúdo</a>
+        <a onclick="showSection('transformacao')" data-section="transformacao">🔄 Antes/Depois</a>
+        <a onclick="showSection('depoimentos')" data-section="depoimentos">⭐ Depoimentos</a>
+        <a onclick="showSection('beneficios')" data-section="beneficios">🎁 Benefícios</a>
+        <a onclick="showSection('oferta')" data-section="oferta">💲 Oferta</a>
+        <a onclick="showSection('faq')" data-section="faq">❓ FAQ</a>
+        <a onclick="showSection('cta')" data-section="cta">📢 CTA Final</a>
+        <a onclick="showSection('entrega')" data-section="entrega">📦 Entrega</a>
+        <a onclick="showSection('autor')" data-section="autor">👤 Autor</a>
+        <a onclick="showSection('garantia')" data-section="garantia">🛡️ Garantia</a>
+        <a onclick="showSection('geral')" data-section="geral">⚙️ Geral / SEO</a>
+        <a onclick="showSection('imagens')" data-section="imagens">🖼️ Imagens</a>
+        <a onclick="showSection('cores')" data-section="cores">🎨 Cores</a>
+        <a class="logout" onclick="doLogout()">🚪 Sair</a>
+      </nav>
+      <div class="main" id="mainContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'mestre360_data';
+    const LOGIN_KEY = 'mestre360_admin';
+
+    function getDefaults() {
+      return {
+        hero: {
+          badge: '📦 Sistema 360 de Blindagem',
+          headline: 'Pare de Perder Dinheiro no <span class="gl">Estoque Sem Perceber</span>',
+          description: 'O método prático para blindar suas entregas, eliminar perdas invisíveis e transformar estoque parado em lucro real.',
+          cta1: 'Quero Dominar Meu Estoque',
+          cta2: 'Ver Conteúdo',
+        },
+        dor: {
+          title: 'Seu Estoque Pode Estar <span class="gt">Sangrando Dinheiro</span>',
+          subtitle: 'O problema não é apenas vender mais. Muitas empresas vendem, compram e movimentam produtos todos os dias, mas continuam perdendo dinheiro porque o estoque está cheio de furos invisíveis.',
+          items: [
+            'Caixas assinadas sem conferência',
+            'Produto separado sem baixa no sistema',
+            'Prateleira sem endereço definido',
+            'Item parado há meses sem giro',
+            'Divergência ignorada entre sistema e físico',
+            'Venda duplicada de produto reservado',
+            'Dependência da memória do estoquista',
+            'Capital parado em produtos sem saída',
+            'Compra por intuição sem Curva ABC',
+            'Inventário anual ineficiente',
+          ],
+        },
+        solucao: {
+          title: 'Apresentamos o <span class="gt">Mestre do Estoque 360</span>',
+          text: 'Um guia prático e direto para empresários e gestores que querem parar de perder dinheiro com divergências, produtos parados, recebimentos mal feitos e falta de controle operacional. Você vai aprender a proteger a entrada, organizar o espaço, controlar a separação, usar a Curva ABC para decidir melhor, auditar diariamente e recuperar capital parado.',
+          stat1: '5',
+          stat1label: 'Pilares do Sistema',
+          stat2: '15',
+          stat2label: 'Capítulos',
+          stat3: '98%+',
+          stat3label: 'Acuracidade',
+        },
+        pilares: [
+          { title: 'Recebimento Técnico', desc: 'Blindar a entrada para impedir que mercadorias com falta, avaria ou divergência contaminem o estoque.' },
+          { title: 'GPS Logístico', desc: 'Criar um sistema de localização para reduzir tempo perdido e aumentar a velocidade da operação.' },
+          { title: 'Separação Blindada', desc: 'Controlar o acesso ao estoque e impedir erros de baixa, venda duplicada e perda de acuracidade.' },
+          { title: 'Curva ABC Aplicada', desc: 'Direcionar capital para produtos que realmente giram e evitar dinheiro parado em itens lentos.' },
+          { title: 'Inventário Cíclico', desc: 'Corrigir pequenas divergências todos os dias antes que virem prejuízos impossíveis de rastrear.' },
+        ],
+        conteudo: {
+          title: 'Dentro do <span class="gt">Ebook</span>',
+          subtitle: '15 capítulos que transformam a gestão do seu estoque do zero ao avançado.',
+          items: [
+            'Introdução — O Estoque Não Quebra de Uma Vez',
+            'Recebimento Técnico e Auditoria de Entrada',
+            'Conferência Cega — o método que impede o vício de confirmação',
+            'GPS Logístico e Arquitetura Física',
+            'Estratégia de Altura por Giro',
+            'Separação Blindada e Operação Controlada',
+            'Área de Pedidos Pendentes',
+            'Inteligência Financeira — Curva ABC Aplicada',
+            'Vaidade de Portfólio — margem sem giro é ilusão',
+            'Auditoria Diária e Inventário Cíclico',
+            'Acuracidade Acima de 98%',
+            'Bônus: Operação Estoque Vivo',
+            'Mercado Digital — encalhe local em oportunidade nacional',
+            'Combos de Desova Dinâmica',
+            'Comissão Reversa',
+          ],
+        },
+        transformacao: {
+          antes: ['Estoque confuso e vulnerável', 'Perdas invisíveis acumuladas', 'Divergência constante sistema x físico', 'Capital parado em produtos sem giro', 'Dependência da memória de funcionários', 'Compras por intuição'],
+          depois: ['Operação estratégica e controlada', 'Entrada blindada com conferência cega', 'Acuracidade acima de 98%', 'Capital liberado com produtos em giro', 'Localização inteligente sem dependência', 'Compras baseadas em dados reais'],
+        },
+        depoimentos: [
+          { stars: '★★★★★', text: '"O método de conferência cega salvou nossa operação. Reduzimos divergências em 80% no primeiro mês."', name: 'Carlos Ribeiro', role: 'CEO — Distribuidora Nova Era', initials: 'CR' },
+          { stars: '★★★★★', text: '"Não fazia ideia de quanto perdia com produtos parados. A operação estoque vivo recuperou R$ 47 mil em 3 meses."', name: 'Ana Mendes', role: 'Diretora — Autopeças Mendes', initials: 'AM' },
+          { stars: '★★★★★', text: '"Antes eu comprava no achismo. Hoje uso a Curva ABC e meu capital de giro melhorou 35%. Leitura obrigatória."', name: 'Rafael Farias', role: 'Gestor — Conecta Logística', initials: 'RF' },
+        ],
+        beneficios: [
+          { icon: '💰', title: 'Reduzir Perdas', desc: 'Elimine prejuízos invisíveis no recebimento, armazenagem e separação.' },
+          { icon: '📊', title: 'Acuracidade Real', desc: 'Sistema refletindo a realidade física com mais de 98% de precisão.' },
+          { icon: '🚀', title: 'Liberar Capital', desc: 'Transforme produtos parados em dinheiro com desova inteligente.' },
+          { icon: '🧭', title: 'Localização Inteligente', desc: 'Organize com endereçamento claro e acelere a separação.' },
+          { icon: '🛡️', title: 'Separação Blindada', desc: 'Evite vendas duplicadas e estornos com processos controlados.' },
+          { icon: '📈', title: 'Compras Inteligentes', desc: 'Baseie compras em giro real, não em intuição.' },
+        ],
+        oferta: {
+          label: 'Oferta Especial de Lançamento',
+          price: 'R$ 97',
+          installment: 'ou 12x de R$ 9,70',
+          bonuses: [
+            'Ebook Mestre do Estoque 360 — PDF Premium',
+            'Bônus: Operação Estoque Vivo',
+            'Bônus: Checklist de Recebimento Técnico',
+            'Bônus: Planilha de Curva ABC Automática',
+            'Acesso digital imediato',
+          ],
+          cta: 'Estou Pronto, Quero Dominar Meu Estoque',
+          guarantee: 'Garantia de 7 dias — Risco zero. Se não gostar, devolvemos seu dinheiro.',
+          urgency: '⚡ Oferta por tempo limitado — Preço promocional de lançamento',
+        },
+        faq: [
+          { q: 'Esse ebook serve para pequenos negócios?', a: 'Sim. Ele foi criado especialmente para operações reais, de pequenas e médias empresas, que precisam melhorar controle sem depender de sistemas complexos.' },
+          { q: 'Preciso ter um grande estoque para aplicar?', a: 'Não. Os princípios funcionam para estoques pequenos, médios ou grandes. Quanto antes aplicar, menos prejuízo acumulado.' },
+          { q: 'É técnico demais?', a: 'Não. A linguagem é direta, prática e voltada para aplicação no dia a dia. Qualquer gestor consegue implementar.' },
+          { q: 'Serve para loja, distribuidora e indústria?', a: 'Sim. O método se aplica a qualquer negócio que recebe, armazena, separa e vende produtos físicos.' },
+          { q: 'Como recebo o ebook após a compra?', a: 'Imediatamente após a confirmação do pagamento, você recebe um e-mail com o link de download. O acesso é vitalício.' },
+          { q: 'E se eu não gostar do conteúdo?', a: 'Você tem 7 dias de garantia incondicional. Se não ficar satisfeito, devolvemos 100% do seu dinheiro.' },
+        ],
+        cta: {
+          title: 'Comece Hoje a <span class="gt">Transformar Seu Estoque</span>',
+          subtitle: 'Pare de perder dinheiro com furos invisíveis. Aplique o sistema 360 de blindagem e transforme seu estoque em uma operação mais lucrativa, controlada e previsível.',
+          button: 'Quero Dominar Meu Estoque',
+        },
+        entrega: {
+          title: 'Como Você <span class="gt">Recebe</span> o Ebook',
+          subtitle: 'Simples, rápido e 100% digital. Você acessa em segundos.',
+          steps: [
+            { title: 'Compra', desc: 'Finalize o pedido no checkout seguro. Aceitamos cartão, PIX e boleto.' },
+            { title: 'Receba no E-mail', desc: 'O link de download chega automaticamente no e-mail cadastrado em até 1 minuto.' },
+            { title: 'Acesse Imediatamente', desc: 'Baixe o PDF premium e comece a aplicar o método hoje mesmo. Acesso vitalício.' },
+          ],
+        },
+        autor: {
+          name: 'João Especialista em Estoque',
+          role: 'Consultor de Gestão de Estoque • 12+ anos de experiência',
+          text: 'Mais de 200 empresas atendidas em todo Brasil, ajudando negócios a reduzirem perdas, organizarem operações e aumentarem a lucratividade através do controle inteligente de estoque.',
+          avatar: '👨‍💼',
+        },
+        garantia: {
+          title: 'Seu Risco é <span class="gt">Zero</span>',
+          text: 'Se por qualquer motivo você não ficar satisfeito com o Mestre do Estoque 360, devolvemos 100% do seu dinheiro. Sem burocracia, sem perguntas. É simples assim: você só ganha, não perde nada.',
+        },
+        geral: {
+          whatsapp: '5511999999999',
+          whatsappMsg: 'Olá! Quero saber mais sobre o Mestre do Estoque 360',
+          footerText: 'Mestre do Estoque 360 — Todos os direitos reservados.',
+          footerSub: 'Produto digital. Preços e condições sujeitos a alteração sem aviso prévio.',
+          seoTitle: 'Mestre do Estoque 360 — Blindar Lucros, Eliminar Perdas e Transformar Estoque em Dinheiro',
+          seoDescription: 'Sistema profissional para blindar lucros, eliminar perdas invisíveis e transformar estoque em dinheiro. Guia prático para empresários e gestores.',
+          navLogo: 'Mestre do <em>Estoque 360</em>',
+          fixedCta: '📥 Acesso imediato • 7 dias de garantia',
+        },
+        imagens: {
+          capa: '',
+          capaInfo: '',
+        },
+      };
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const saved = JSON.parse(raw);
+          const defaults = getDefaults();
+          return mergeDeep(defaults, saved);
+        } catch (e) { return getDefaults(); }
+      }
+      return getDefaults();
+    }
+
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const saved = JSON.parse(raw);
+          const defaults = getDefaults();
+          return mergeDeep(defaults, saved);
+        } catch (e) { return getDefaults(); }
+      }
+      return getDefaults();
+    }
+
+    function mergeDeep(target, source) {
+      const output = { ...target };
+      for (const key of Object.keys(source)) {
+        if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key]) && target[key]) {
+          output[key] = mergeDeep(target[key], source[key]);
+        } else {
+          output[key] = source[key];
+        }
+      }
+      return output;
+    }
+
+    // LOGIN
+    function doLogin() {
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value.trim();
+      if (u === 'admin' && p === 'estoque360') {
+        localStorage.setItem(LOGIN_KEY, 'true');
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        showSection('hero');
+      } else {
+        document.getElementById('loginError').textContent = 'Usuário ou senha incorretos';
+      }
+    }
+
+    function doLogout() {
+      localStorage.removeItem(LOGIN_KEY);
+      location.reload();
+    }
+
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '') + ' show';
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function stripHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/<[^>]+>/g, '');
+    }
+
+    function showSection(name) {
+      document.querySelectorAll('.sidebar a[data-section]').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.sidebar a[data-section="${name}"]`);
+      if (link) link.classList.add('active');
+
+      const data = loadData();
+      const main = document.getElementById('mainContent');
+      const s = data[name];
+
+      function stripHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/<[^>]+>/g, '');
+      }
+
+      function input(label, key, val, type) {
+        type = type || 'text';
+        var v = (val === null || val === undefined) ? '' : stripHtml(String(val)).replace(/"/g, '&quot;');
+        var tag = type === 'textarea' ? 'textarea' : 'input';
+        var attrs = type === 'textarea' ? '' : 'type="' + type + '"';
+        return '<div class="form-group"><label>' + label + '</label><' + tag + ' ' + attrs + ' data-key="' + key + '" value="' + v + '">' + (type === 'textarea' ? v : '') + '</' + tag + '></div>';
+      }
+
+      function inputHtml(label, key, val, type) {
+        type = type || 'text';
+        var original = (val === null || val === undefined) ? '' : String(val).replace(/"/g, '&quot;');
+        var plain = stripHtml(original);
+        var tag = type === 'textarea' ? 'textarea' : 'input';
+        var attrs = type === 'textarea' ? '' : 'type="' + type + '"';
+        return '<div class="form-group"><label>' + label + ' <span style="font-size:.7rem;color:var(--accent);opacity:.6">(destaque automático)</span></label><' + tag + ' ' + attrs + ' data-key="' + key + '" data-original="' + original + '" value="' + plain + '">' + (type === 'textarea' ? plain : '') + '</' + tag + '></div>';
+      }
+
+      function labelSection(tag, title) {
+        return `<div class="section-card"><h3>${tag} ${title}</h3>`;
+      }
+
+      let html = '';
+
+      if (name === 'hero') {
+        html = labelSection('🏠', 'Hero') +
+          input('Badge', 'hero.badge', s.badge) +
+          inputHtml('Headline', 'hero.headline', s.headline) +
+          input('Descrição', 'hero.description', s.description) +
+          input('Botão CTA primário', 'hero.cta1', s.cta1) +
+          input('Botão secundário', 'hero.cta2', s.cta2) +
+          '</div><button class="btn-save" onclick="saveSection(\'hero\')">Salvar Hero</button>';
+      }
+
+      if (name === 'dor') {
+        html = labelSection('⚠️', 'Dor') +
+          inputHtml('Título', 'dor.title', s.title) +
+          input('Subtítulo', 'dor.subtitle', s.subtitle) +
+          '<div class="form-group"><label>Itens da dor (um por linha)</label><textarea data-key="dor.items" style="min-height:200px">' + (s.items || []).join('\n') + '</textarea></div>' +
+          '</div><button class="btn-save" onclick="saveSection(\'dor\')">Salvar Dor</button>';
+      }
+
+      if (name === 'solucao') {
+        html = labelSection('💡', 'Solução') +
+          inputHtml('Título', 'solucao.title', s.title) +
+          input('Texto', 'solucao.text', s.text) +
+          input('Stat 1 valor', 'solucao.stat1', s.stat1) +
+          input('Stat 1 label', 'solucao.stat1label', s.stat1label) +
+          input('Stat 2 valor', 'solucao.stat2', s.stat2) +
+          input('Stat 2 label', 'solucao.stat2label', s.stat2label) +
+          input('Stat 3 valor', 'solucao.stat3', s.stat3) +
+          input('Stat 3 label', 'solucao.stat3label', s.stat3label) +
+          '</div><button class="btn-save" onclick="saveSection(\'solucao\')">Salvar Solução</button>';
+      }
+
+      if (name === 'pilares') {
+        html = labelSection('🏗️', '5 Pilares');
+        (s || []).forEach((p, i) => {
+          html += `<div class="section-card" class="sub-card"><h3>Pilar ${i + 1}</h3>` +
+            input('Título', `pilares.${i}.title`, p.title) +
+            input('Descrição', `pilares.${i}.desc`, p.desc) +
+            '</div>';
+        });
+        html += '<button class="btn-save" onclick="saveSection(\'pilares\')">Salvar Pilares</button>';
+      }
+
+      if (name === 'conteudo') {
+        html = labelSection('📖', 'Conteúdo do Ebook') +
+          inputHtml('Título', 'conteudo.title', s.title) +
+          input('Subtítulo', 'conteudo.subtitle', s.subtitle) +
+          '<div class="form-group"><label>Capítulos (um por linha)</label><textarea data-key="conteudo.items" style="min-height:280px">' + (s.items || []).join('\n') + '</textarea></div>' +
+          '</div><button class="btn-save" onclick="saveSection(\'conteudo\')">Salvar Conteúdo</button>';
+      }
+
+      if (name === 'transformacao') {
+        html = labelSection('🔄', 'Antes e Depois') +
+          '<div class="section-card" style="background:rgba(255,68,68,.02)"><h3>Antes</h3><div class="form-group"><label>Itens (um por linha)</label><textarea data-key="transformacao.antes" style="min-height:140px">' + (s.antes || []).join('\n') + '</textarea></div></div>' +
+          '<div class="section-card" style="background:rgba(0,200,83,.02)"><h3>Depois</h3><div class="form-group"><label>Itens (um por linha)</label><textarea data-key="transformacao.depois" style="min-height:140px">' + (s.depois || []).join('\n') + '</textarea></div></div>' +
+          '<button class="btn-save" onclick="saveSection(\'transformacao\')">Salvar Transformação</button>';
+      }
+
+      if (name === 'depoimentos') {
+        html = labelSection('⭐', 'Depoimentos');
+        (s || []).forEach((d, i) => {
+          html += `<div class="section-card" class="sub-card"><h3>Depoimento ${i + 1}</h3>` +
+            input('Estrelas', `depoimentos.${i}.stars`, d.stars) +
+            input('Texto', `depoimentos.${i}.text`, d.text) +
+            input('Nome', `depoimentos.${i}.name`, d.name) +
+            input('Cargo/Empresa', `depoimentos.${i}.role`, d.role) +
+            input('Iniciais (avatar)', `depoimentos.${i}.initials`, d.initials) +
+            '</div>';
+        });
+        html += '<button class="btn-save" onclick="saveSection(\'depoimentos\')">Salvar Depoimentos</button>';
+      }
+
+      if (name === 'beneficios') {
+        html = labelSection('🎁', 'Benefícios');
+        (s || []).forEach((b, i) => {
+          html += `<div class="section-card" class="sub-card"><h3>Benefício ${i + 1}</h3>` +
+            input('Ícone', `beneficios.${i}.icon`, b.icon) +
+            input('Título', `beneficios.${i}.title`, b.title) +
+            input('Descrição', `beneficios.${i}.desc`, b.desc) +
+            '</div>';
+        });
+        html += '<button class="btn-save" onclick="saveSection(\'beneficios\')">Salvar Benefícios</button>';
+      }
+
+      if (name === 'oferta') {
+        html = labelSection('💲', 'Oferta') +
+          input('Label', 'oferta.label', s.label) +
+          input('Preço', 'oferta.price', s.price) +
+          input('Parcelamento', 'oferta.installment', s.installment) +
+          '<div class="form-group"><label>Bônus (um por linha)</label><textarea data-key="oferta.bonuses" style="min-height:120px">' + (s.bonuses || []).join('\n') + '</textarea></div>' +
+          input('Texto do CTA', 'oferta.cta', s.cta) +
+          input('Garantia', 'oferta.guarantee', s.guarantee) +
+          input('Urgência', 'oferta.urgency', s.urgency) +
+          '</div><button class="btn-save" onclick="saveSection(\'oferta\')">Salvar Oferta</button>';
+      }
+
+      if (name === 'faq') {
+        html = labelSection('❓', 'FAQ');
+        (s || []).forEach((f, i) => {
+          html += `<div class="section-card" class="sub-card"><h3>Pergunta ${i + 1}</h3>` +
+            input('Pergunta', `faq.${i}.q`, f.q) +
+            input('Resposta', `faq.${i}.a`, f.a) +
+            '</div>';
+        });
+        html += '<button class="btn-save" onclick="saveSection(\'faq\')">Salvar FAQ</button>';
+      }
+
+      if (name === 'cta') {
+        html = labelSection('📢', 'CTA Final') +
+          inputHtml('Título', 'cta.title', s.title) +
+          input('Subtítulo', 'cta.subtitle', s.subtitle) +
+          input('Botão', 'cta.button', s.button) +
+          '</div><button class="btn-save" onclick="saveSection(\'cta\')">Salvar CTA Final</button>';
+      }
+
+      if (name === 'entrega') {
+        html = labelSection('📦', 'Entrega') +
+          inputHtml('Título', 'entrega.title', s.title) +
+          input('Subtítulo', 'entrega.subtitle', s.subtitle);
+        (s.steps || []).forEach((st, i) => {
+          html += `<div class="section-card" class="sub-card"><h3>Passo ${i + 1}</h3>` +
+            input('Título', `entrega.steps.${i}.title`, st.title) +
+            input('Descrição', `entrega.steps.${i}.desc`, st.desc) +
+            '</div>';
+        });
+        html += '<button class="btn-save" onclick="saveSection(\'entrega\')">Salvar Entrega</button>';
+      }
+
+      if (name === 'autor') {
+        html = labelSection('👤', 'Autor') +
+          input('Nome', 'autor.name', s.name) +
+          input('Cargo', 'autor.role', s.role) +
+          input('Texto', 'autor.text', s.text) +
+          input('Avatar (emoji)', 'autor.avatar', s.avatar) +
+          '</div><button class="btn-save" onclick="saveSection(\'autor\')">Salvar Autor</button>';
+      }
+
+      if (name === 'garantia') {
+        html = labelSection('🛡️', 'Garantia') +
+          inputHtml('Título', 'garantia.title', s.title) +
+          input('Texto', 'garantia.text', s.text) +
+          '</div><button class="btn-save" onclick="saveSection(\'garantia\')">Salvar Garantia</button>';
+      }
+
+      if (name === 'geral') {
+        html = labelSection('⚙️', 'Geral / SEO / Contato') +
+          input('Título SEO (title tag)', 'geral.seoTitle', s.seoTitle) +
+          input('Descrição SEO (meta description)', 'geral.seoDescription', s.seoDescription) +
+          input('Logo (nav)', 'geral.navLogo', s.navLogo) +
+          input('WhatsApp (só número)', 'geral.whatsapp', s.whatsapp) +
+          input('Mensagem WhatsApp', 'geral.whatsappMsg', s.whatsappMsg) +
+          input('Texto footer principal', 'geral.footerText', s.footerText) +
+          input('Texto footer secundário', 'geral.footerSub', s.footerSub) +
+          input('Texto barra fixa mobile', 'geral.fixedCta', s.fixedCta) +
+          '</div><button class="btn-save" onclick="saveSection(\'geral\')">Salvar Geral</button>';
+
+        html += '<div class="section-card" style="margin-top:20px"><h3>🔄 Restaurar Padrões</h3><p style="font-size:.85rem;color:var(--text-muted);margin-bottom:12px">Remove todas as alterações e restaura o conteúdo original da landing page.</p><button class="btn-save" style="background:#ff4444;color:#fff" onclick="if(confirm(\'Tem certeza? Isso apagará TODAS as alterações.\')){localStorage.removeItem(\'mestre360_data\');showToast(\'✅ Dados resetados! Recarregue a landing page.\');showSection(\'geral\')}">Resetar Tudo para Padrão</button></div>';
+      }
+
+      if (name === 'imagens') {
+        html = labelSection('🖼️', 'Upload de Imagens');
+        var capaAtual = (s.capa && s.capa.length > 100) ? s.capa : 'capa.png';
+        var isDataUri = capaAtual.indexOf('data:') === 0;
+        html += '<div class="form-group" style="text-align:center">';
+        html += '<label>Capa do Ebook (atual)</label>';
+        html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:8px">';
+        html += '<img id="imgPreviewCapa" src="' + capaAtual + '" style="max-width:200px;max-height:280px;display:block;margin:0 auto;border-radius:4px" onerror="this.style.display=\'none\'" />';
+        html += '</div>';
+        html += '<p style="font-size:.75rem;color:var(--text-dim);margin-bottom:12px">';
+        html += '📐 <strong>Formato:</strong> PNG ou JPG<br/>';
+        html += '📏 <strong>Tamanho recomendado:</strong> 800×1200px (proporção 2:3)<br/>';
+        html += '📦 <strong>Peso máximo:</strong> 2MB<br/>';
+        html += '💡 <strong>Dica:</strong> Use uma imagem com fundo escuro para combinar com o design';
+        html += '</p>';
+        html += '<input type="file" id="fileCapa" accept="image/png,image/jpeg,image/jpg" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--overlay-solid);color:var(--text);font-size:.85rem;font-family:inherit" onchange="previewImage(this,\'imgPreviewCapa\')" />';
+        html += '<input type="hidden" data-key="imagens.capa" id="hiddenCapa" value="' + (isDataUri ? '' : '') + '" />';
+        html += '<input type="hidden" data-key="imagens.capaInfo" value="' + (s.capaInfo || '') + '" />';
+        html += '</div>';
+        html += '</div><button class="btn-save" onclick="saveImage()">💾 Salvar Imagem</button>';
+        html += '<div class="section-card" style="margin-top:20px"><h3>🗑️ Remover Imagem Personalizada</h3><p style="font-size:.85rem;color:var(--text-muted);margin-bottom:12px">Remove a imagem carregada e volta a usar a capa padrão (capa.png).</p><button class="btn-save" style="background:#ff4444;color:#fff" onclick="removeCustomImage()">Voltar para Capa Padrão</button></div>';
+      }
+
+      if (name === 'cores') {
+        var currentTheme = localStorage.getItem('mestre360_theme') || '1';
+        var themes = [
+          {id:'1',name:'Verde Esmeralda',color:'#00c853',mode:'dark'},
+          {id:'2',name:'Azul Royal',color:'#2979ff',mode:'dark'},
+          {id:'3',name:'Laranja Fogo',color:'#ff6d00',mode:'dark'},
+          {id:'4',name:'Roxo Vibrante',color:'#7c3aed',mode:'dark'},
+          {id:'5',name:'Rosa Pink',color:'#ec4899',mode:'dark'},
+          {id:'6',name:'Dourado Premium',color:'#f59e0b',mode:'dark'},
+          {id:'7',name:'Ciano Elétrico',color:'#06b6d4',mode:'dark'},
+          {id:'8',name:'Azul Claro',color:'#2563eb',mode:'light'},
+          {id:'9',name:'Âmbar Claro',color:'#ea580c',mode:'light'},
+          {id:'10',name:'Verde Claro',color:'#16a34a',mode:'light'},
+          {id:'11',name:'Vermelho Escuro',color:'#ef4444',mode:'dark'},
+          {id:'12',name:'Teal Escuro',color:'#14b8a6',mode:'dark'},
+          {id:'13',name:'Azul Noturno',color:'#38bdf8',mode:'dark'},
+          {id:'14',name:'Floresta Escura',color:'#4ade80',mode:'dark'},
+        ];
+        var darkThemes = themes.filter(function(t){return t.mode==='dark';});
+        var lightThemes = themes.filter(function(t){return t.mode==='light';});
+
+        function renderThemeCard(t, sel) {
+          var h = '';
+          h += '<div onclick="setTheme(\''+t.id+'\')" style="cursor:pointer;background:'+(sel?t.color+'18':'var(--surface)')+';border:2px solid '+(sel?t.color:'var(--border)')+';border-radius:12px;padding:14px;text-align:center;transition:all .2s">';
+          h += '<div style="width:40px;height:40px;border-radius:50%;background:'+t.color+';margin:0 auto 10px;box-shadow:0 4px 16px '+t.color+'44"></div>';
+          h += '<div style="font-size:.82rem;font-weight:600;color:'+(sel?t.color:'var(--text)')+'">'+t.name+'</div>';
+          h += '<div style="font-size:.68rem;color:'+t.color+';margin-top:2px">'+t.color+'</div>';
+          if (sel) h += '<div style="font-size:.68rem;color:'+t.color+';margin-top:4px;font-weight:700">✓ Ativo</div>';
+          h += '</div>';
+          return h;
+        }
+
+        html = labelSection('🎨', 'Escolha a Paleta de Cores');
+        html += '<p style="font-size:.85rem;color:var(--text-muted);margin-bottom:8px">Troque todo o visual do site com um clique.</p>';
+
+        // Grupo ESCUROS
+        html += '<div class="section-card" style="margin-bottom:16px"><h3>🌙 Temas Escuros</h3>';
+        html += '<p style="font-size:.78rem;color:var(--text-dim);margin-bottom:16px">Fundo escuro com destaques coloridos — ideal para telas e leitura noturna.</p>';
+        html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">';
+        darkThemes.forEach(function(t){
+          var sel = t.id === currentTheme;
+          html += renderThemeCard(t, sel);
+        });
+        html += '</div></div>';
+
+        // Grupo CLAROS
+        html += '<div class="section-card"><h3>☀️ Temas Claros</h3>';
+        html += '<p style="font-size:.78rem;color:var(--text-dim);margin-bottom:16px">Fundo claro com texto escuro — todos os elementos se adaptam automaticamente.</p>';
+        html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">';
+        lightThemes.forEach(function(t){
+          var sel = t.id === currentTheme;
+          html += renderThemeCard(t, sel);
+        });
+        html += '</div></div>';
+      }
+
+      main.innerHTML = '<h2>' + name.charAt(0).toUpperCase() + name.slice(1) + '</h2><div class="desc">Edite os campos e clique em Salvar. As alterações aparecem automaticamente na landing page.</div>' + html;
+
+      if (name === 'cores') {
+        main.innerHTML += '<div class="section-card" style="margin-top:20px;text-align:center"><p style="font-size:.82rem;color:var(--text-muted)">💡 A landing page e o checkout atualizam automaticamente ao trocar de cor.</p></div>';
+      }
+    }
+
+    function saveSection(section) {
+      try {
+        var data = loadData();
+        var inputs = document.querySelectorAll('[data-key]');
+        var count = 0;
+        inputs.forEach(function(el) {
+          var key = el.dataset.key;
+          var parts = key.split('.');
+          var cur = data;
+          for (var i = 0; i < parts.length - 1; i++) {
+            var p = parts[i];
+            if (!cur[p]) cur[p] = isNaN(parts[i + 1]) ? {} : [];
+            cur = cur[p];
+          }
+          var last = parts[parts.length - 1];
+          var newVal;
+          if (el.tagName === 'TEXTAREA' && (last === 'items' || last === 'antes' || last === 'depois' || last === 'bonuses' || last === 'steps')) {
+            newVal = el.value.split('\n').filter(function(l){ return l.trim(); });
+          } else if (el.tagName === 'TEXTAREA') {
+            newVal = el.value;
+          } else {
+            newVal = el.value;
+          }
+          if (el.dataset.original && stripHtml(el.dataset.original) === el.value) {
+            newVal = el.dataset.original;
+          }
+          cur[last] = newVal;
+          count++;
+        });
+        saveData(data);
+        showSection(section);
+        showToast('✅ Salvo (' + count + ' campos)');
+      } catch(e) {
+        showToast('Erro ao salvar: ' + e.message, true);
+      }
+    }
+
+    window.saveSection = saveSection;
+    window.showSection = showSection;
+
+    function setTheme(id) {
+      localStorage.setItem('mestre360_theme', id);
+      document.body.dataset.theme = id;
+      showSection('cores');
+      showToast('🎨 Tema aplicado! Landing page + Checkout atualizados.');
+    }
+
+    function previewImage(input, previewId) {
+      var file = input.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast('Imagem muito grande! Máximo 2MB', true); input.value = ''; return; }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById(previewId).src = e.target.result;
+        document.getElementById(previewId).style.display = 'block';
+        document.getElementById('hiddenCapa').value = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveImage() {
+      var dataUrl = document.getElementById('hiddenCapa').value;
+      var data = loadData();
+      if (!data.imagens) data.imagens = {};
+      if (dataUrl && dataUrl.length > 100) {
+        data.imagens.capa = dataUrl;
+        data.imagens.capaInfo = 'custom_' + Date.now();
+        saveData(data);
+        showToast('✅ Imagem salva! A landing page e o checkout serão atualizados.');
+      } else {
+        showToast('⚠️ Selecione uma imagem primeiro.', true);
+      }
+    }
+
+    function removeCustomImage() {
+      if (!confirm('Voltar para a capa padrão?')) return;
+      var data = loadData();
+      if (data.imagens) { data.imagens.capa = ''; data.imagens.capaInfo = ''; }
+      saveData(data);
+      document.getElementById('imgPreviewCapa').src = 'capa.png';
+      document.getElementById('imgPreviewCapa').style.display = 'block';
+      document.getElementById('hiddenCapa').value = '';
+      showToast('✅ Capa padrão restaurada!');
+    }
+
+    // Check if already logged in
+    if (localStorage.getItem(LOGIN_KEY) === 'true') {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      showSection('hero');
+    }
+  </script>
+</body>
+</html>
