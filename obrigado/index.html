@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedido Confirmado — Mestre do Estoque 360</title>
+  <meta name="description" content="Seu pedido do Mestre do Estoque 360 foi confirmado! Acesse seu ebook agora mesmo." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:title" content="Pedido Confirmado — Mestre do Estoque 360" />
+  <meta property="og:description" content="Seu pedido foi confirmado! Acesse seu ebook agora mesmo." />
+  <meta property="og:image" content="../capa.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#09090b;--surface:#18181b;--border:rgba(255,255,255,0.06);
+      --border-hover:rgba(255,255,255,0.12);--text:#fafafa;
+      --text-muted:rgba(255,255,255,0.5);--text-dim:rgba(255,255,255,0.25);
+      --accent:#00c853;--accent-dim:rgba(0,200,83,0.1);--accent-glow:rgba(0,200,83,0.25);
+      --blue:#2979ff;--gold:#d4a853;--radius:16px;--radius-sm:10px
+    }
+    body[data-theme="1"]{--accent:#00c853;--accent-dim:rgba(0,200,83,0.1);--accent-glow:rgba(0,200,83,0.25);--blue:#2979ff}
+    body[data-theme="2"]{--accent:#2979ff;--accent-dim:rgba(41,121,255,0.1);--accent-glow:rgba(41,121,255,0.25);--blue:#00c853}
+    body[data-theme="3"]{--accent:#ff6d00;--accent-dim:rgba(255,109,0,0.1);--accent-glow:rgba(255,109,0,0.25);--blue:#ff9100}
+    body[data-theme="4"]{--accent:#7c3aed;--accent-dim:rgba(124,58,237,0.1);--accent-glow:rgba(124,58,237,0.25);--blue:#a855f7}
+    body[data-theme="5"]{--accent:#ec4899;--accent-dim:rgba(236,72,153,0.1);--accent-glow:rgba(236,72,153,0.25);--blue:#f472b6}
+    body[data-theme="6"]{--accent:#f59e0b;--accent-dim:rgba(245,158,11,0.1);--accent-glow:rgba(245,158,11,0.25);--blue:#fbbf24}
+    body[data-theme="7"]{--accent:#06b6d4;--accent-dim:rgba(6,182,212,0.1);--accent-glow:rgba(6,182,212,0.25);--blue:#22d3ee}
+    body[data-theme="8"]{--bg:#ffffff;--surface:#f8f9fa;--border:rgba(0,0,0,0.1);--text:#111827;--text-muted:rgba(0,0,0,0.65);--text-dim:rgba(0,0,0,0.45);--accent:#2563eb;--accent-dim:rgba(37,99,235,0.08);--accent-glow:rgba(37,99,235,0.2);--blue:#3b82f6}
+    body[data-theme="9"]{--bg:#fffbeb;--surface:#fef3c7;--border:rgba(0,0,0,0.1);--text:#1c1917;--text-muted:rgba(0,0,0,0.65);--text-dim:rgba(0,0,0,0.45);--accent:#ea580c;--accent-dim:rgba(234,88,12,0.08);--accent-glow:rgba(234,88,12,0.2);--blue:#f97316}
+    body[data-theme="10"]{--bg:#f0fdf4;--surface:#dcfce7;--border:rgba(0,0,0,0.1);--text:#14532d;--text-muted:rgba(0,0,0,0.65);--text-dim:rgba(0,0,0,0.45);--accent:#16a34a;--accent-dim:rgba(22,163,74,0.08);--accent-glow:rgba(22,163,74,0.2);--blue:#22c55e}
+    body[data-theme="11"]{--accent:#ef4444;--accent-dim:rgba(239,68,68,0.1);--accent-glow:rgba(239,68,68,0.25);--blue:#f87171}
+    body[data-theme="12"]{--accent:#14b8a6;--accent-dim:rgba(20,184,166,0.1);--accent-glow:rgba(20,184,166,0.25);--blue:#2dd4bf}
+    body[data-theme="13"]{--bg:#0f172a;--surface:#1e293b;--accent:#38bdf8;--accent-dim:rgba(56,189,248,0.1);--accent-glow:rgba(56,189,248,0.25);--blue:#7dd3fc}
+    body[data-theme="14"]{--bg:#0a0f0a;--surface:#1a2f1a;--accent:#4ade80;--accent-dim:rgba(74,222,128,0.1);--accent-glow:rgba(74,222,128,0.25);--blue:#86efac}
+    html{-webkit-font-smoothing:antialiased}
+    body{
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+      background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;padding:20px
+    }
+    .container{max-width:640px;width:100%;text-align:center}
+    .card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:48px 36px;position:relative;overflow:hidden
+    }
+    .card::before{
+      content:'';position:absolute;top:-40%;left:-40%;width:180%;height:180%;
+      background:conic-gradient(from 0deg at 50% 50%,transparent 0%,var(--accent-dim) 25%,transparent 50%);
+      animation:spin 12s linear infinite
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .card>*{position:relative;z-index:2}
+    .check-icon{
+      width:72px;height:72px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--blue));
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 24px;font-size:2rem;color:#000
+    }
+    h1{font-size:clamp(1.4rem,2.5vw,1.9rem);font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+    .sub{font-size:.95rem;color:var(--text-muted);margin-bottom:32px;line-height:1.7}
+    .drive-box{
+      background:var(--accent-dim);border:1px solid rgba(0,200,83,.12);
+      border-radius:var(--radius-sm);padding:24px;margin-bottom:28px;text-align:center
+    }
+    .drive-box h4{font-size:.9rem;font-weight:600;color:var(--accent);margin-bottom:12px}
+    .drive-box .drive-link{
+      display:inline-block;word-break:break-all;font-size:.8rem;color:var(--text-muted);
+      background:var(--surface);padding:8px 16px;border-radius:8px;margin-bottom:16px
+    }
+    .info-box{
+      background:var(--accent-dim);border:1px solid rgba(0,200,83,.12);
+      border-radius:var(--radius-sm);padding:20px;margin-bottom:28px;text-align:left
+    }
+    .info-box h4{font-size:.85rem;font-weight:600;color:var(--accent);margin-bottom:10px}
+    .info-box li{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.82rem;color:var(--text-muted);list-style:none}
+    .info-box li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      padding:14px 32px;border-radius:60px;font-weight:700;font-size:.95rem;
+      text-decoration:none;cursor:pointer;border:none;
+      transition:all var(--transition);font-family:inherit
+    }
+    .btn-primary{background:var(--accent);color:#000;box-shadow:0 6px 28px var(--accent-glow);width:100%}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 40px var(--accent-glow)}
+    .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);margin-top:12px;width:100%}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .whatsapp-cta{
+      margin-top:24px;padding:16px;border-radius:var(--radius-sm);
+      background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.12);
+      font-size:.82rem;color:var(--text-muted)
+    }
+    .whatsapp-cta a{color:#25D366;font-weight:600;text-decoration:none}
+    .whatsapp-cta a:hover{text-decoration:underline}
+    footer{text-align:center;padding:24px 0 0;font-size:.75rem;color:var(--text-dim)}
+    @media(max-width:480px){.card{padding:32px 20px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="check-icon">✓</div>
+      <h1>Pedido Confirmado!</h1>
+      <p class="sub" id="msgPersonalizada">Seu acesso ao <strong>Mestre do Estoque 360</strong> foi liberado. Os dados da sua compra já foram enviados para o seu e-mail. Clique no botão abaixo para baixar seu ebook agora mesmo.</p>
+
+      <div class="drive-box" id="driveBox" style="display:none">
+        <h4>📥 Seu Ebook Está Pronto</h4>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">Clique no botão abaixo para acessar o material:</p>
+        <a id="driveBtn" href="#" target="_blank" class="btn btn-primary">
+          Baixar Mestre do Estoque 360
+        </a>
+      </div>
+
+      <div class="info-box">
+        <h4>✅ Próximos passos:</h4>
+        <ul>
+          <li>Baixe o ebook e salve no seu dispositivo</li>
+          <li>O acesso é vitalício — baixe quando quiser</li>
+          <li>Em caso de dúvidas, fale com nosso suporte</li>
+        </ul>
+      </div>
+
+      <a href="../" class="btn btn-secondary">← Voltar para o site</a>
+
+      <div class="whatsapp-cta" id="whatsappBox">
+        Não recebeu o e-mail? Fale conosco no WhatsApp:
+        <a id="whatsappLink" href="https://wa.me/5511999999999?text=Ol%C3%A1!%20N%C3%A3o%20recebi%20meu%20acesso" target="_blank" rel="noopener">
+          Clique aqui para falar com o suporte
+        </a>
+      </div>
+    </div>
+    <footer>© 2026 Mestre do Estoque 360 — Todos os direitos reservados.</footer>
+  </div>
+
+  <script>
+    (function(){var t=localStorage.getItem('mestre360_theme');if(t)document.body.dataset.theme=t;})();
+  </script>
+  <script>
+    (function(){
+      var raw = localStorage.getItem('mestre360_data');
+      if (!raw) return;
+      try {
+        var d = JSON.parse(raw);
+
+        // Google Drive link
+        if (d.email && d.email.driveLink) {
+          document.getElementById('driveBox').style.display = 'block';
+          document.getElementById('driveBtn').href = d.email.driveLink;
+        }
+
+        // WhatsApp personalizado
+        if (d.whatsapp && d.whatsapp.numero) {
+          var link = document.getElementById('whatsappLink');
+          var msg = d.whatsapp.mensagem || 'Olá! Não recebi meu acesso ao Mestre do Estoque 360';
+          link.href = 'https://wa.me/' + d.whatsapp.numero + '?text=' + encodeURIComponent(msg);
+        } else if (d.geral && d.geral.whatsapp) {
+          var link = document.getElementById('whatsappLink');
+          var msg = d.geral.whatsappMsg || 'Olá! Não recebi meu acesso';
+          link.href = 'https://wa.me/' + d.geral.whatsapp + '?text=' + encodeURIComponent(msg);
+        }
+
+        // Mensagem personalizada do email config
+        if (d.email && d.email.agradecimento) {
+          document.getElementById('msgPersonalizada').innerHTML = d.email.agradecimento;
+        }
+      } catch(e) {}
+    })();
+
+    // Nome do comprador via URL
+    var params = new URLSearchParams(window.location.search);
+    var nome = params.get('nome');
+    if (nome) {
+      var titulo = document.querySelector('h1');
+      if (titulo) titulo.textContent = 'Parabéns, ' + decodeURIComponent(nome) + '!';
+    }
+  </script>
+</body>
+</html>
